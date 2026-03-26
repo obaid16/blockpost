@@ -1,0 +1,74 @@
+Project: Block Post Manager (Next.js + MongoDB)
+
+1. Project Overview
+- A simple CRUD post management app using Next.js 13 App Router and MongoDB.
+- Users can create posts, view posts, edit posts, block/unblock posts, and delete posts.
+- Post status values: "Active" or "Blocked".
+- Backend API in app/api/posts/route.js.
+- MongoDB model in models/Post.js.
+
+2. API Endpoints (/app/api/posts)
+
+GET /api/posts
+- Function: Retrieve all posts.
+- Query: no query returns all posts sorted by createdAt descending.
+- Response: { success: true, posts: [...] }
+
+GET /api/posts?id=<postId>
+- Function: Retrieve a single post by ID.
+- Query param: id (MongoDB ObjectId).
+- Success: { success: true, post: { ... } }
+- Errors: 404 if not found, 500 on server error.
+
+POST /api/posts
+- Function: Create a new post.
+- Body JSON: { title: string, description: string }
+- Validation: title and description required.
+- Behavior: status defaults to "Active".
+- Success: 201 with created post.
+- Errors: 400 for missing fields, 500 on server error.
+
+PATCH /api/posts
+- Function: Update post status.
+- Body JSON: { id: string, status: "Active"|"Blocked" }
+- Validation: id required, status must be allowed values.
+- Success: { success: true, post: updatedPost }
+- Errors: 400 invalid input, 404 not found, 500 server error.
+
+PUT /api/posts
+- Function: Update post title and description.
+- Body JSON: { id: string, title: string, description: string }
+- Validation: id, title, and description required.
+- Success: { success: true, post: updatedPost }
+- Errors: 400 missing fields, 404 not found, 500 server error.
+
+DELETE /api/posts?id=<postId>
+- Function: Delete a post by ID.
+- Query param: id required.
+- Success: { success: true, message: "Post deleted." }
+- Errors: 400 id missing, 404 not found, 500 server error.
+
+3. Data Model (models/Post.js)
+- title: String, required.
+- description: String, required, trimmed.
+- status: String, enum ["Active", "Blocked"], default "Active".
+- timestamps: true (createdAt, updatedAt).
+
+4. Frontend pages
+- /: Home dashboard linking to create and list pages.
+- /create-post: Form to submit new posts.
+- /posts: List posts with status controls.
+- /posts/[id]/edit: Edit an existing post.
+
+5. Requirements
+- Node.js + npm environment.
+- Next.js 13 App Router.
+- MongoDB connection (lib/mongodb.js handles connect logic).
+- `MONGODB_URI` env var to connect.
+- Install dependencies from package.json (next, react, mongoose, lucide-react, etc.).
+- Optional: ensure CORS or API usage inside same domain (- Next app handles it).
+
+6. Usage hints
+- Create post then manage status on /posts.
+- Blocked posts are stored but can be reactivated using PATCH status update.
+- Keep titles/descriptions non-empty.
